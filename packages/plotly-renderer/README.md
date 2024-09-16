@@ -1,1 +1,0 @@
-# @vue-pivottable/plotly-renderer

@@ -1,6 +1,6 @@
 {
-  "name": "vue-pivottable",
-  "version": "0.4.67",
+  "name": "vue3-pivottable",
+  "version": "1.0.0",
   "main": "dist/vue-pivottable.mjs",
   "files": [
     "dist",
@@ -18,16 +18,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/Seungwoo321/vue-pivottable.git"
+    "url": "git://github.com/Silicon-Spirit/vue3-pivottable.git"
   },
-  "keywords": [
-    "vue",
-    "pivot",
-    "pivottable",
-    "vue-pivottable"
-  ],
-  "homepage": "https://seungwoo321.github.io/vue-pivottable/",
-  "author": "Seungwoo, Lee <seungwoo321@gmail.com> (https://github.com/seungwoo321)",
   "license": "MIT",
   "scripts": {
     "dev": "vite",
@@ -38,19 +30,9 @@
     "docs:build": "vuepress build packages/docs",
     "docs:deploy": "sh packages/docs/deploy-docs.sh"
   },
-  "dependencies": {
-    "vue": "^2.6.10",
-    "vuedraggable": "^2.23.0"
-  },
   "devDependencies": {
-    "@vitejs/plugin-vue2": "^2.0.0",
-    "@vue/eslint-config-standard": "^4.0.0",
-    "babel-eslint": "^10.1.0",
-    "babel-preset-env": "^1.7.0",
-    "eslint": "^5.16.0",
-    "eslint-loader": "^3.0.2",
-    "eslint-plugin-vue": "^5.2.3",
-    "vite": "^3.1.8",
-    "vite-plugin-static-copy": "^0.11.1"
+    "@vitejs/plugin-vue": "^5.1.3",
+    "vite": "^5.4.5",
+    "vite-plugin-static-copy": "^1.0.6"
   }
 }
