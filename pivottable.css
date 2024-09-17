@@ -4,7 +4,6 @@
 }
 
 .pvtUi {
-  table-layout: fixed;
   width: 100%;
   color: #2a3f5f;
   font-family: Verdana;
@@ -16,16 +15,12 @@
   -moz-user-select: none;
   -khtml-user-select: none;
   -ms-user-select: none;
-  border-radius: 5px ;
 }
-.pvtUi td {
-  overflow-x: auto;
-}
+
 .pvtUi td.pvtOutput {
   padding: 6px;
   vertical-align: top;
   border: 1px solid #a2b1c6;
-  overflow-x: auto;
 }
 
 table.pvtTable {
@@ -99,21 +94,8 @@ table.pvtTable tbody tr td {
 .pvtRenderers {
   border: 1px solid #a2b1c6;
   user-select: none;
-  width: 25%;
 }
-@media screen and (max-width:576px) {
-  .pvtRenderers {
-    width: 100%;
-  }
-  .pvtAxisContainer{
-    display: none;
-  }
-}
-@media screen and (width: 768px) {
-  .pvtRenderers {
-    width: 40%;
-  }
-}
+
 .pvtDropdown {
   border: 1px solid #a2b1c6;
   align-items: center;
@@ -128,11 +110,11 @@ table.pvtTable tbody tr td {
   outline: none;
   line-height: 1 !important;
   margin: 3px;
-  user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -khtml-user-select: none;
   -ms-user-select: none;
+  user-select: none;
 }
 
 .pvtRenderers .pvtDropdown {
@@ -203,7 +185,6 @@ table.pvtTable tbody tr td {
 .pvtHorizList li {
   display: inline-block;
 }
-
 .pvtVertList {
   vertical-align: top;
 }
@@ -224,6 +205,15 @@ table.pvtTable tbody tr td {
   cursor: pointer;
   text-decoration: none !important;
 }
+
+/* .pvtDragHandle {
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  font-size: 18px;
+  cursor: move;
+  color: #a2b1c6;
+} */
 
 .pvtButton {
   display: inline-block;
@@ -283,6 +273,7 @@ table.pvtTable tbody tr td {
   color: #2a3f5f;
   margin-bottom: 5px;
   padding: 6px;
+  /* border-radius: 4px; */
 }
 
 .pvtFilterBox {
@@ -330,7 +321,6 @@ table.pvtTable tbody tr td {
 .pvtCheckContainer p:hover .pvtOnly {
   display: block;
 }
-
 .pvtCheckContainer p:hover .pvtOnlySpacer {
   display: none;
 }

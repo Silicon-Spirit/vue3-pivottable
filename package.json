@@ -1,38 +1,9 @@
 {
   "name": "vue3-pivottable",
-  "version": "1.0.0",
-  "main": "dist/vue-pivottable.mjs",
-  "files": [
-    "dist",
-    "src"
-  ],
-  "workspaces": [
-    "packages/*"
-  ],
-  "exports": {
-    ".": {
-      "import": "./dist/vue-pivottable.mjs",
-      "require": "./dist/vue-pivottable.umd.js"
-    },
-    "./dist/": "./dist/"
-  },
+  "version": "1.0.1",
   "repository": {
     "type": "git",
     "url": "git://github.com/Silicon-Spirit/vue3-pivottable.git"
   },
-  "license": "MIT",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "serve": "vite preview",
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
-    "docs:dev": "vuepress dev packages/docs",
-    "docs:build": "vuepress build packages/docs",
-    "docs:deploy": "sh packages/docs/deploy-docs.sh"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-vue": "^5.1.3",
-    "vite": "^5.4.5",
-    "vite-plugin-static-copy": "^1.0.6"
-  }
+  "license": "MIT"
 }
