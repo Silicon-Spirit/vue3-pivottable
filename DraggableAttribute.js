@@ -154,34 +154,42 @@ export default {
 								},
 							}),
 							Vue.h(
-								"a",
+								"div",
 								{
-									class: ["pvtButton"],
-									role: "button",
-									onClick: () =>
-										this.removeValuesFromFilter(
-											this.name,
-											Object.keys(this.attrValues).filter(
-												this.matchesFilter.bind(this)
-											)
-										),
+									class: ["pvtButtonContainer"],
 								},
-								__("Select {0}", [values.length === shown.length ? __("all") : shown.length])
-							),
-							Vue.h(
-								"a",
-								{
-									class: ["pvtButton"],
-									role: "button",
-									onClick: () =>
-										this.addValuesToFilter(
-											this.name,
-											Object.keys(this.attrValues).filter(
-												this.matchesFilter.bind(this)
-											)
-										),
-								},
-								__("Deselect {0}", [values.length === shown.length ? __("all") : shown.length])
+								[
+									Vue.h(
+										"a",
+										{
+											class: ["pvtButton"],
+											role: "button",
+											onClick: () =>
+												this.removeValuesFromFilter(
+													this.name,
+													Object.keys(this.attrValues).filter(
+														this.matchesFilter.bind(this)
+													)
+												),
+										},
+										__("Select {0}", [values.length === shown.length ? __("all") : shown.length])
+									),
+									Vue.h(
+										"a",
+										{
+											class: ["pvtButton"],
+											role: "button",
+											onClick: () =>
+												this.addValuesToFilter(
+													this.name,
+													Object.keys(this.attrValues).filter(
+														this.matchesFilter.bind(this)
+													)
+												),
+										},
+										__("Unselect {0}", [values.length === shown.length ? __("all") : shown.length])
+									),
+								]
 							),
 						]
 					),
