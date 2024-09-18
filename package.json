@@ -1,9 +1,9 @@
 {
-  "name": "vue3-pivottable",
-  "version": "1.0.1",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/Silicon-Spirit/vue3-pivottable.git"
-  },
-  "license": "MIT"
+	"name": "vue3-pivottable",
+	"license": "MIT",
+	"version": "1.0.0",
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/Silicon-Spirit/vue3-pivottable.git"
+	}
 }
