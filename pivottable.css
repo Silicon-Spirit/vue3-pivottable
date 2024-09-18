@@ -1,69 +1,72 @@
-
 * {
 	box-sizing: border-box
-  }
-  
-  .pvtUi {
+}
+
+.pvtUi {
 	table-layout: fixed;
 	width: 100%;
 	color: #2a3f5f;
 	border-collapse: collapse;
-  } 
-  .pvtUi select {
+}
+
+.pvtUi select {
 	user-select: none;
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-khtml-user-select: none;
 	-ms-user-select: none;
-	border-radius: 5px ;
-  }
-  .pvtUi td {
+	border-radius: 5px;
+}
+
+.pvtUi td {
 	overflow-x: auto;
-  }
-  .pvtUi td.pvtOutput {
+}
+
+.pvtUi td.pvtOutput {
 	padding: 6px;
 	vertical-align: top;
-	border: 1px solid #a2b1c6;
+	border: none;
 	overflow-x: auto;
-  }
-  
-  table.pvtTable {
+}
+
+table.pvtTable {
 	font-size: 8pt;
 	text-align: left;
 	border-collapse: collapse;
-  }
-  
-  table.pvtTable thead tr th,
-  table.pvtTable tbody tr th {
+}
+
+table.pvtTable thead tr th,
+table.pvtTable tbody tr th {
 	background-color: #ebf0f8;
 	border: 1px solid #c8d4e3;
 	font-size: 8pt;
 	padding: 5px;
-  }
-  
-  table.pvtTable .pvtColLabel {
+}
+
+table.pvtTable .pvtColLabel {
 	text-align: center;
-  }
-  table.pvtTable .pvtTotalLabel {
+}
+
+table.pvtTable .pvtTotalLabel {
 	text-align: right;
-  }
-  
-  table.pvtTable tbody tr td {
+}
+
+table.pvtTable tbody tr td {
 	color: #2a3f5f;
 	padding: 3px;
 	background-color: #fff;
 	border: 1px solid #c8d4e3;
 	vertical-align: top;
 	text-align: right;
-  }
-  
-  .pvtTotal,
-  .pvtGrandTotal {
+}
+
+.pvtTotal,
+.pvtGrandTotal {
 	font-weight: bold;
-  }
-  
-  .pvtRowOrder,
-  .pvtColOrder {
+}
+
+.pvtRowOrder,
+.pvtColOrder {
 	cursor: pointer;
 	width: 15px;
 	margin-left: 5px;
@@ -74,17 +77,18 @@
 	-moz-user-select: none;
 	-khtml-user-select: none;
 	-ms-user-select: none;
-  }
-  
-  .pvtAxisContainer,
-  .pvtVals {
+}
+
+.pvtAxisContainer,
+.pvtVals {
 	border: 1px solid #a2b1c6;
 	background: #fff;
 	padding: 5px;
 	min-width: 20px;
 	min-height: 20px;
-  }
-  .pvtVals.pvtText {
+}
+
+.pvtVals.pvtText {
 	vertical-align: middle;
 	font-size: 15px;
 	font-weight: bold;
@@ -92,27 +96,31 @@
 	user-select: none;
 	padding-left: 16px;
 	text-align: start;
-  }
-  
-  .pvtRenderers {
+}
+
+.pvtRenderers {
 	border: 1px solid #a2b1c6;
 	user-select: none;
 	width: 25%;
-  }
-  @media screen and (max-width:576px) {
+}
+
+@media screen and (max-width:576px) {
 	.pvtRenderers {
-	  width: 100%;
+		width: 100%;
 	}
-	.pvtAxisContainer{
-	  display: none;
+
+	.pvtAxisContainer {
+		display: none;
 	}
-  }
-  @media screen and (width: 768px) {
+}
+
+@media screen and (width: 768px) {
 	.pvtRenderers {
-	  width: 40%;
+		width: 40%;
 	}
-  }
-  .pvtDropdown {
+}
+
+.pvtDropdown {
 	border: 1px solid #a2b1c6;
 	align-items: center;
 	display: block;
@@ -131,46 +139,48 @@
 	-moz-user-select: none;
 	-khtml-user-select: none;
 	-ms-user-select: none;
-  }
-  
-  .pvtRenderers .pvtDropdown {
+}
+
+.pvtRenderers .pvtDropdown {
 	padding: 0px 0px 0px 12px;
 	border: none;
 	width: 100%;
 	margin: 0px;
-  }
-  
-  .pvtDropdown:last-child {
+}
+
+.pvtDropdown:last-child {
 	margin-bottom: 0px;
-  }
-  
-  .pvtVals {
+}
+
+.pvtVals {
 	white-space: nowrap;
 	vertical-align: top;
 	padding-bottom: 12px;
-  }
-  
-  .pvtRows {
+}
+
+.pvtRows {
 	height: 35px;
-  }
-  
-  .pvtAxisContainer li {
+}
+
+.pvtAxisContainer li {
 	padding: 8px 6px;
 	list-style-type: none;
 	cursor: move;
-  }
-  .pvtAxisContainer li.pvtPlaceholder {
+}
+
+.pvtAxisContainer li.pvtPlaceholder {
 	-webkit-border-radius: 5px;
 	padding: 3px 15px;
 	-moz-border-radius: 5px;
 	border-radius: 5px;
 	border: 1px dashed #a2b1c6;
-  }
-  .pvtAxisContainer li.pvtPlaceholder span.pvtAttr {
+}
+
+.pvtAxisContainer li.pvtPlaceholder span.pvtAttr {
 	display: none;
-  }
-  
-  .pvtAxisContainer li span.pvtAttr {
+}
+
+.pvtAxisContainer li span.pvtAttr {
 	-webkit-text-size-adjust: 100%;
 	background: #f3f6fa;
 	border: 2px dashed #c8d4e3;
@@ -184,46 +194,56 @@
 	-moz-user-select: none;
 	-khtml-user-select: none;
 	-ms-user-select: none;
-  }
-  .pvtAxisContainer li span.pvtAttr.sortonly {
+}
+
+.pvtAxisContainer li span.pvtAttr.sortonly {
 	border: 1px solid #c8d4e3;
-  }
-  .pvtAxisContainer li span.pvtAttr.disabled {
+}
+
+.pvtAxisContainer li span.pvtAttr.disabled {
 	border: 1px solid #c8d4e3;
 	color: #c5c5c5;
 	cursor: not-allowed;
-  }
-  .pvtTriangle {
+}
+
+.pvtTriangle {
 	cursor: pointer;
 	color: #506784;
-  }
-  
-  .pvtHorizList li {
+}
+
+.pvtHorizList li {
 	display: inline-block;
-  }
-  
-  .pvtVertList {
+}
+
+.pvtVertList {
 	vertical-align: top;
-  }
-  
-  .pvtFilteredAttribute {
+}
+
+.pvtFilteredAttribute {
 	font-style: italic;
-  }
-  
-  .sortable-chosen .pvtFilterBox {
+}
+
+.sortable-chosen .pvtFilterBox {
 	display: none !important;
-  }
-  
-  .pvtFilterTextClear {
+}
+
+.pvtFilterTextClear {
 	position: absolute;
 	right: 5px;
 	top: 5px;
 	font-size: 18px;
 	cursor: pointer;
 	text-decoration: none !important;
-  }
-  
-  .pvtButton {
+}
+
+.pvtButtonContainer {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+}
+
+.pvtButton {
 	display: inline-block;
 	color: #506784;
 	border-radius: 5px;
@@ -235,31 +255,31 @@
 	margin: 3px 3px 6px 0px;
 	transition: 0.34s all cubic-bezier(0.19, 1, 0.22, 1);
 	text-decoration: none !important;
-  }
-  
-  .pvtButton:hover {
+}
+
+.pvtButton:hover {
 	background: #e2e8f0;
 	border-color: #a2b1c6;
-  }
-  
-  .pvtButton:active {
+}
+
+.pvtButton:active {
 	background: #d1dae6;
-  }
-  
-  .pvtFilterBox input {
+}
+
+.pvtFilterBox input {
 	border: 1px solid #c8d4e3;
 	border-radius: 5px;
 	color: #506784;
 	padding: 0 3px;
 	font-size: 14px;
-  }
-  
-  .pvtFilterBox input:focus {
+}
+
+.pvtFilterBox input:focus {
 	border-color: #119dff;
 	outline: none;
-  }
-  
-  .pvtFilterBox {
+}
+
+.pvtFilterBox {
 	z-index: 100;
 	border: 1px solid #506784;
 	max-width: 600px;
@@ -273,21 +293,21 @@
 	-moz-user-select: none;
 	-khtml-user-select: none;
 	-ms-user-select: none;
-  }
-  
-  .pvtFilterBox input[type='text'] {
+}
+
+.pvtFilterBox input[type='text'] {
 	display: block;
 	width: 100%;
 	color: #2a3f5f;
 	margin-bottom: 5px;
 	padding: 6px;
-  }
-  
-  .pvtFilterBox {
+}
+
+.pvtFilterBox {
 	padding: 3px;
-  }
-  
-  .pvtCheckContainer {
+}
+
+.pvtCheckContainer {
 	text-align: left;
 	font-size: 14px;
 	white-space: nowrap;
@@ -295,44 +315,44 @@
 	width: 100%;
 	max-height: 30vh;
 	border-top: 1px solid #dfe8f3;
-  }
-  
-  .pvtCheckContainer p {
+}
+
+.pvtCheckContainer p {
 	margin: 0;
 	margin-bottom: 1px;
 	padding: 3px;
 	cursor: default;
-  }
-  
-  .pvtCheckContainer p.selected {
+}
+
+.pvtCheckContainer p.selected {
 	background: #ebf0f8;
 	min-width: 100%;
 	width: max-content;
-  }
-  
-  .pvtOnly {
+}
+
+.pvtOnly {
 	display: none;
 	width: 20px;
 	float: right;
 	font-size: 12px;
 	padding-left: 5px;
 	cursor: pointer;
-  }
-  
-  .pvtOnlySpacer {
+}
+
+.pvtOnlySpacer {
 	display: block;
 	width: 35px;
 	float: right;
-  }
-  
-  .pvtCheckContainer p:hover .pvtOnly {
+}
+
+.pvtCheckContainer p:hover .pvtOnly {
 	display: block;
-  }
-  
-  .pvtCheckContainer p:hover .pvtOnlySpacer {
+}
+
+.pvtCheckContainer p:hover .pvtOnlySpacer {
 	display: none;
-  }
-  
-  .pvtRendererArea {
+}
+
+.pvtRendererArea {
 	padding: 5px;
-  }
+}
