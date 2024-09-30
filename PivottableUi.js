@@ -147,10 +147,14 @@ export default {
 	},
 	methods: {
 		assignValue(field) {
-			this.propsData.valueFilter = {
-				...this.propsData.valueFilter,
-				[field]: {},
-			};
+			if (this.valueFilter) {
+				this.propsData.valueFilter = this.valueFilter
+			} else {
+				this.propsData.valueFilter = {
+					...this.propsData.valueFilter,
+					[field]: {},
+				};
+			}
 		},
 		propUpdater(key) {
 			return (value) => {
@@ -159,6 +163,7 @@ export default {
 		},
 		updateValueFilter({ attribute, valueFilter }) {
 			this.propsData.valueFilter[attribute] = { ...valueFilter };
+			cur_list.pivot_value_filter = this.propsData.valueFilter
 		},
 		moveFilterBoxToTop({ attribute }) {
 			this.maxZIndex += 1;
