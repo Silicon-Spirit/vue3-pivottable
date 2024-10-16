@@ -1,6 +1,7 @@
 import { PivotData } from "./helper/utils";
 import defaultProps from "./helper/defaultProps";
 import * as Vue from "vue";
+
 function redColorScaleGenerator(values) {
 	const min = Math.min.apply(Math, values);
 	const max = Math.max.apply(Math, values);
@@ -381,19 +382,30 @@ function makeRenderer(opts = {}) {
 	return TableRenderer;
 }
 
-const TSVExportRenderer = {
-	name: "tsv-export-renderers",
+const XLSXExportRenderer = {
+	name: "xlsx-export-renderers",
 	props: defaultProps.props,
+	methods: {
+		exportToXLSX(data) {
+			const worksheet = XLSX.utils.aoa_to_sheet(data);
+			const workbook = XLSX.utils.book_new();
+			XLSX.utils.book_append_sheet(workbook, worksheet, "Pivot Data");
+
+			XLSX.writeFile(workbook, "pivot_data_export.xlsx");
+		},
+	},
 	render() {
 		const pivotData = new PivotData(this.$props);
 		const rowKeys = pivotData.getRowKeys();
 		const colKeys = pivotData.getColKeys();
+
 		if (rowKeys.length === 0) {
 			rowKeys.push([]);
 		}
 		if (colKeys.length === 0) {
 			colKeys.push([]);
 		}
+
 		const headerRow = pivotData.props.rows.map((r) => r);
 		if (colKeys.length === 1 && colKeys[0].length === 0) {
 			headerRow.push(this.aggregatorName);
@@ -401,7 +413,7 @@ const TSVExportRenderer = {
 			colKeys.map((c) => headerRow.push(c.join("-")));
 		}
 
-		const result = rowKeys.map((r) => {
+		const data = rowKeys.map((r) => {
 			const row = r.map((x) => x);
 			colKeys.map((c) => {
 				const v = pivotData.getAggregator(r, c).value();
@@ -410,18 +422,85 @@ const TSVExportRenderer = {
 			return row;
 		});
 
-		result.unshift(headerRow);
+		data.unshift(headerRow);
 
-		return Vue.h("textarea", {
-			style: {
-				width: window.innerWidth / 2,
-				height: window.innerHeight / 2,
-			},
-			readOnly: true,
-			value: result.map((r) => r.join("\t")).join("\n"),
-		});
+		return Vue.h("div", [
+			Vue.h("button", {
+				class: "btn btn-default btn-sm ellipsis mb-3",
+				onClick: () => this.exportToXLSX(data),
+			}, "Export to XLSX"
+			),
+			Vue.h("textarea", {
+				style: {
+					width: "100%",
+					height: "59vh",
+				},
+				readOnly: true,
+				value: data.map((r) => r.join("\t")).join("\n"),
+			})
+		]);
 	},
 };
+
+//// Modifications in progress, doesn't work atm ////
+
+// import { GChart } from 'vue-google-charts';
+
+// function makeChartRenderer(opts = {}, chartType = 'ColumnChart', additionalOptions = {}) {
+
+// 	const googleChartRenderer = {
+// 		name: opts.name,
+// 		mixins: [defaultProps],
+// 		props: {
+// 			googleOptions: {
+// 				type: Object,
+// 				default: () => ({})
+// 			},
+// 		},
+// 		render() {
+// 			const pivotData = new PivotData(this.$props);
+// 			// const rowKeys = pivotData.getRowKeys();
+// 			// const colKeys = pivotData.getColKeys();
+// 			// if (rowKeys.length === 0) rowKeys.push([]);
+// 			// if (colKeys.length === 0) colKeys.push([]);
+	  
+// 			// const data = [['Labels', opts.label || 'Value']];
+// 			// rowKeys.forEach(rowKey => {
+// 			//   const values = [];
+// 			//   colKeys.forEach(colKey => {
+// 			// 	const v = pivotData.getAggregator(rowKey, colKey).value();
+// 			// 	values.push(v !== null ? v : 0);
+// 			//   });
+// 			//   data.push([rowKey.join('-'), ...values]);
+// 			// });
+
+// 			const data = [
+// 				['Year', 'Sales', 'Expenses'],
+// 				['2013', 1000, 400],
+// 				['2014', 1170, 460],
+// 				['2015', 660, 1120],
+// 				['2016', 1030, 540],
+// 			];
+
+// 			console.log(pivotData);
+	  
+// 			return Vue.h(GChart, {
+// 			  props: {
+// 				type: pivotData.type,
+// 				data: pivotData.data,
+// 				options: {
+// 				  ...this.googleOptions,
+// 				  ...additionalOptions,
+// 				  title: `${opts.name} Chart`,
+// 				  width: '100%',
+// 				  height: '400px',
+// 				},
+// 			  }
+// 			});
+// 		  }
+// 		};
+// 		return googleChartRenderer;
+// }
 
 export default {
 	Table: makeRenderer({ name: "vue-table" }),
@@ -437,5 +516,6 @@ export default {
 		heatmapMode: "row",
 		name: "vue-table-col-heatmap",
 	}),
-	"Export Table TSV": TSVExportRenderer,
+	"Export Table XLSX": XLSXExportRenderer,
+	//"Google Chart": makeChartRenderer({ name: 'Area Chart', label: 'Values' }, 'AreaChart'),
 };
