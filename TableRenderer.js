@@ -391,7 +391,7 @@ const XLSXExportRenderer = {
 			const workbook = XLSX.utils.book_new();
 			XLSX.utils.book_append_sheet(workbook, worksheet, "Pivot Data");
 
-			XLSX.writeFile(workbook, "pivot_data_export.xlsx");
+			XLSX.writeFile(workbook, !!cur_list.doctype ? `${cur_list.doctype.toLowerCase().replaceAll(' ', '_')}_pivot_export.xlsx` : "pivot_data_export.xlsx");
 		},
 	},
 	render() {
@@ -424,20 +424,17 @@ const XLSXExportRenderer = {
 
 		data.unshift(headerRow);
 
-		return Vue.h("div", [
+		return Vue.h("div", {
+			class: "d-flex justify-content-center align-items-center",
+			style: {
+				width: "100%",
+				height: "59vh",
+			},
+		}, [
 			Vue.h("button", {
 				class: "btn btn-default btn-sm ellipsis mb-3",
 				onClick: () => this.exportToXLSX(data),
-			}, "Export to XLSX"
-			),
-			Vue.h("textarea", {
-				style: {
-					width: "100%",
-					height: "59vh",
-				},
-				readOnly: true,
-				value: data.map((r) => r.join("\t")).join("\n"),
-			})
+			}, "Export to XLSX")
 		]);
 	},
 };
