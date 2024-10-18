@@ -513,6 +513,6 @@ export default {
 		heatmapMode: "row",
 		name: "vue-table-col-heatmap",
 	}),
-	"Export Table XLSX": XLSXExportRenderer,
+	"Export XLSX": XLSXExportRenderer,
 	//"Google Chart": makeChartRenderer({ name: 'Area Chart', label: 'Values' }, 'AreaChart'),
 };
