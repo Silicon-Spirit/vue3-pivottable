@@ -292,8 +292,8 @@ export default {
 									style: {
 										display: "inline-block",
 									},
-									values: Object.keys(aggregators),
-									value: aggregatorName,
+									values: Object.keys(__(aggregators)),
+									value: __(aggregatorName),
 									onInput: (value) => {
 										this.propUpdater("aggregatorName")(value);
 									},

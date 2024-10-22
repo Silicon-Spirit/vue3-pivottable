@@ -323,7 +323,7 @@ const aggregatorTemplates = {
 							case "stdev":
 								return Math.sqrt(this.s / (this.n - ddof));
 							default:
-								throw new Error("unknown mode for runningStat");
+								throw new Error(__("unknown mode for runningStat"));
 						}
 					},
 					format: formatter,
@@ -431,38 +431,38 @@ const locales = {
 	en: {
 		aggregators,
 		localeStrings: {
-			renderError: "An error occurred rendering the PivotTable results.",
-			computeError: "An error occurred computing the PivotTable results.",
-			uiRenderError: "An error occurred rendering the PivotTable UI.",
-			selectAll: "Select All",
-			selectNone: "Select None",
-			tooMany: "(too many to list)",
-			filterResults: "Filter values",
-			apply: "Apply",
-			cancel: "Cancel",
-			totals: "Totals",
-			vs: "vs",
-			by: "by",
+			renderError: __("An error occurred rendering the PivotTable results."),
+			computeError: __("An error occurred computing the PivotTable results."),
+			uiRenderError: __("An error occurred rendering the PivotTable UI."),
+			selectAll: __("Select All"),
+			selectNone: __("Select None"),
+			tooMany: __("(too many to list)"),
+			filterResults: __("Filter values"),
+			apply: __("Apply"),
+			cancel: __("Cancel"),
+			totals: __("Totals"),
+			vs: __("vs"),
+			by: __("by"),
 		},
 	},
 };
 
 // dateFormat deriver l10n requires month and day names to be passed in directly
 const mthNamesEn = [
-	"Jan",
-	"Feb",
-	"Mar",
-	"Apr",
-	"May",
-	"Jun",
-	"Jul",
-	"Aug",
-	"Sep",
-	"Oct",
-	"Nov",
-	"Dec",
+	__("Jan"),
+	__("Feb"),
+	__("Mar"),
+	__("Apr"),
+	__("May"),
+	__("Jun"),
+	__("Jul"),
+	__("Aug"),
+	__("Sep"),
+	__("Oct"),
+	__("Nov"),
+	__("Dec"),
 ];
-const dayNamesEn = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const dayNamesEn = [__("Sun"), __("Mon"), __("Tue"), __("Wed"), __("Thu"), __("Fri"), __("Sat")];
 const zeroPad = (number) => `0${number}`.substr(-2, 2); // eslint-disable-line no-magic-numbers
 
 const derivers = {
@@ -746,7 +746,7 @@ PivotData.forEachRecord = function (input, derivedAttributes, f) {
 			return result1;
 		})();
 	}
-	throw new Error("unknown input format");
+	throw new Error(__("unknown input format"));
 };
 
 PivotData.defaultProps = {

@@ -499,8 +499,8 @@ const XLSXExportRenderer = {
 // 		return googleChartRenderer;
 // }
 
-export default {
-	Table: makeRenderer({ name: "vue-table" }),
+const renderers = {
+	"Table": makeRenderer({ name: "vue-table" }),
 	"Table Heatmap": makeRenderer({
 		heatmapMode: "full",
 		name: "vue-table-heatmap",
@@ -513,6 +513,14 @@ export default {
 		heatmapMode: "row",
 		name: "vue-table-col-heatmap",
 	}),
-	"Export XLSX": XLSXExportRenderer,
+	"Export": XLSXExportRenderer,
 	//"Google Chart": makeChartRenderer({ name: 'Area Chart', label: 'Values' }, 'AreaChart'),
 };
+
+const translated_renderers = {};
+
+Object.keys(renderers).forEach((key) => {
+	translated_renderers[__(key)] = renderers[key];
+});
+
+export default translated_renderers;
