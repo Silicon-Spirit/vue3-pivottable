@@ -428,7 +428,7 @@ const XLSXExportRenderer = {
 			class: "d-flex justify-content-center align-items-center",
 			style: {
 				width: "100%",
-				height: "59vh",
+				height: "60vh",
 			},
 		}, [
 			Vue.h("button", {
@@ -439,65 +439,101 @@ const XLSXExportRenderer = {
 	},
 };
 
-//// Modifications in progress, doesn't work atm ////
+import { Chart } from "frappe-charts/dist/frappe-charts.min.esm";
 
-// import { GChart } from 'vue-google-charts';
+function makeChartRenderer(chartType, opts = {}) {
+	const ChartRenderer = {
+		name: opts.name,
+		props: defaultProps.props,
+		data() {
+			return {
+				chart: null
+			};
+		},
+		mounted() {
+			this.renderChart();
+		},
+		watch: {
+			'$props': {
+				handler() {
+					this.updateChart();
+				},
+				deep: true
+			}
+		},
+		methods: {
+			renderChart() {
+				const pivotData = new PivotData(this.$props);
+				const rowKeys = pivotData.getRowKeys();
+				const colKeys = pivotData.getColKeys();
 
-// function makeChartRenderer(opts = {}, chartType = 'ColumnChart', additionalOptions = {}) {
+				if (rowKeys.length === 0) {
+					rowKeys.push([]);
+				}
+				if (colKeys.length === 0) {
+					colKeys.push([]);
+				}
 
-// 	const googleChartRenderer = {
-// 		name: opts.name,
-// 		mixins: [defaultProps],
-// 		props: {
-// 			googleOptions: {
-// 				type: Object,
-// 				default: () => ({})
-// 			},
-// 		},
-// 		render() {
-// 			const pivotData = new PivotData(this.$props);
-// 			// const rowKeys = pivotData.getRowKeys();
-// 			// const colKeys = pivotData.getColKeys();
-// 			// if (rowKeys.length === 0) rowKeys.push([]);
-// 			// if (colKeys.length === 0) colKeys.push([]);
-	  
-// 			// const data = [['Labels', opts.label || 'Value']];
-// 			// rowKeys.forEach(rowKey => {
-// 			//   const values = [];
-// 			//   colKeys.forEach(colKey => {
-// 			// 	const v = pivotData.getAggregator(rowKey, colKey).value();
-// 			// 	values.push(v !== null ? v : 0);
-// 			//   });
-// 			//   data.push([rowKey.join('-'), ...values]);
-// 			// });
+				const headerRow = [];
 
-// 			const data = [
-// 				['Year', 'Sales', 'Expenses'],
-// 				['2013', 1000, 400],
-// 				['2014', 1170, 460],
-// 				['2015', 660, 1120],
-// 				['2016', 1030, 540],
-// 			];
+				if (colKeys.length === 1 && colKeys[0].length === 0) {
+					headerRow.push(this.aggregatorName);
+				} else {
+					colKeys.map((col) => {
+						let filteredCols = col.filter(el => !!el);
+						headerRow.push(filteredCols.join("-"));
+					});
+				}
 
-// 			console.log(pivotData);
-	  
-// 			return Vue.h(GChart, {
-// 			  props: {
-// 				type: pivotData.type,
-// 				data: pivotData.data,
-// 				options: {
-// 				  ...this.googleOptions,
-// 				  ...additionalOptions,
-// 				  title: `${opts.name} Chart`,
-// 				  width: '100%',
-// 				  height: '400px',
-// 				},
-// 			  }
-// 			});
-// 		  }
-// 		};
-// 		return googleChartRenderer;
-// }
+				const rawData = rowKeys.map((r) => {
+					const row = [];
+					colKeys.map((c) => {
+						const v = pivotData.getAggregator(r, c).value();
+						row.push(v || "");
+					});
+					return row;
+				});
+
+				rawData.unshift(headerRow);
+
+				const labels = rowKeys.flat();
+
+				const datasets = rawData[0].map((name, index) => {
+					const values = rawData.slice(1).map(row => row[index]);
+					return {
+						name: name,
+						values: values
+					};
+				});
+
+				const chartHeight = (window.innerHeight / 100) * 60;
+
+				this.chart = new Chart(this.$refs.chartContainer, {
+					data: {
+						labels: labels,
+						datasets: datasets
+					},
+					type: chartType,
+					height: chartHeight,
+					colors: ['#7ad6ff', '#7a94ff', '#d7d0ff', '#ff7b92', '#ffad70', '#fff48d', '#7ef8b3', '#c1ff7a', '#d7b3ff', '#ff7bff', '#b1b1b1', '#8d8d8d']
+				});
+			},
+			updateChart() {
+				console.log('update');
+				
+				if (this.chart) {
+					this.chart.destroy();
+				}
+
+				this.renderChart();
+			}
+		},
+		render() {
+			return Vue.h('div', { ref: 'chartContainer', id: 'pivot_chart' });
+		}
+	};
+	return ChartRenderer;
+}
 
 const renderers = {
 	"Table": makeRenderer({ name: "vue-table" }),
@@ -513,8 +549,12 @@ const renderers = {
 		heatmapMode: "row",
 		name: "vue-table-col-heatmap",
 	}),
+	// "Axis-mixed Chart": makeChartRenderer("axis-mixed"),
+	"Bar Chart": makeChartRenderer("bar"),
+	"Line Chart": makeChartRenderer("line"),
+	"Pie Chart": makeChartRenderer("pie"),
+	"Percentage Chart": makeChartRenderer("percentage"),
 	"Export": XLSXExportRenderer,
-	//"Google Chart": makeChartRenderer({ name: 'Area Chart', label: 'Values' }, 'AreaChart'),
 };
 
 const translated_renderers = {};
