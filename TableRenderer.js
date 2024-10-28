@@ -1,5 +1,6 @@
 import { PivotData } from "./helper/utils";
 import defaultProps from "./helper/defaultProps";
+import { Chart } from "frappe-charts/dist/frappe-charts.min.esm";
 import * as Vue from "vue";
 
 function redColorScaleGenerator(values) {
@@ -11,11 +12,12 @@ function redColorScaleGenerator(values) {
 		return { backgroundColor: `rgb(255,${nonRed},${nonRed})` };
 	};
 }
+
 function makeRenderer(opts = {}) {
 	const TableRenderer = {
 		name: opts.name,
 		props: {
-			heatmapMode: String,
+			mode: String,
 			tableColorScaleGenerator: {
 				type: Function,
 				default: redColorScaleGenerator,
@@ -68,64 +70,141 @@ function makeRenderer(opts = {}) {
 				}
 				return len;
 			},
+			renderChart() {
+
+				const pivotData = new PivotData(this.$props);
+
+				const buildChartElement = (data) => {
+					const chartHeight = (window.innerHeight / 100) * 60;
+
+					setTimeout(() => {
+						return new Chart(this.$refs.chartContainer, {
+							data: data,
+							type: opts.chartType,
+							height: chartHeight,
+							colors: ['#7ad6ff', '#7a94ff', '#d7d0ff', '#ff7b92', '#ffad70', '#fff48d', '#7ef8b3', '#c1ff7a', '#d7b3ff', '#ff7bff', '#b1b1b1', '#8d8d8d']
+						});
+					}, 100)
+				}
+
+				if (Object.keys(pivotData.tree).length) {
+					const rowKeys = pivotData.getRowKeys();
+					const colKeys = pivotData.getColKeys();
+
+					if (rowKeys.length === 0) {
+						rowKeys.push([]);
+					}
+					if (colKeys.length === 0) {
+						colKeys.push([]);
+					}
+
+					const headerRow = [];
+
+					if (colKeys.length === 1 && colKeys[0].length === 0) {
+						headerRow.push(this.aggregatorName);
+					} else {
+						colKeys.map((col) => {
+							let filteredCols = col.filter(el => !!el);
+							headerRow.push(filteredCols.join("-"));
+						});
+					}
+
+					const rawData = rowKeys.map((r) => {
+						const row = [];
+						colKeys.map((c) => {
+							const v = pivotData.getAggregator(r, c).value();
+							row.push(v || "");
+						});
+						return row;
+					});
+
+					rawData.unshift(headerRow);
+
+					const labels = rowKeys.flat();
+
+					const datasets = rawData[0].map((name, index) => {
+						const values = rawData.slice(1).map(row => row[index]);
+						return {
+							name: name,
+							values: values
+						};
+					});
+
+					const data = {
+						labels: labels,
+						datasets: datasets
+					}
+
+					buildChartElement(data)
+
+				} else {
+
+					buildChartElement({ labels: [], datasets: []})
+				}
+			},
 		},
 		render() {
-			const pivotData = new PivotData(this.$props);
-			const colAttrs = pivotData.props.cols;
-			const rowAttrs = pivotData.props.rows;
-			const rowKeys = pivotData.getRowKeys();
-			const colKeys = pivotData.getColKeys();
-			const grandTotalAggregator = pivotData.getAggregator([], []);
 
-			// eslint-disable-next-line no-unused-vars
-			let valueCellColors = () => {};
-			// eslint-disable-next-line no-unused-vars
-			let rowTotalColors = () => {};
-			// eslint-disable-next-line no-unused-vars
-			let colTotalColors = () => {};
-			if (opts.heatmapMode) {
-				const colorScaleGenerator = this.tableColorScaleGenerator;
-				const rowTotalValues = colKeys.map((x) =>
-					pivotData.getAggregator([], x).value()
-				);
-				rowTotalColors = colorScaleGenerator(rowTotalValues);
-				const colTotalValues = rowKeys.map((x) =>
-					pivotData.getAggregator(x, []).value()
-				);
-				colTotalColors = colorScaleGenerator(colTotalValues);
+			if (['table', 'heat-map-full', 'heat-map-col', 'heat-map-row'].includes(opts.mode)) {
 
-				if (opts.heatmapMode === "full") {
-					const allValues = [];
-					rowKeys.map((r) =>
-						colKeys.map((c) =>
-							allValues.push(pivotData.getAggregator(r, c).value())
-						)
+				const pivotData = new PivotData(this.$props);
+				const rowKeys = pivotData.getRowKeys();
+				const colKeys = pivotData.getColKeys();
+				const colAttrs = pivotData.props.cols;
+				const rowAttrs = pivotData.props.rows;
+				const grandTotalAggregator = pivotData.getAggregator([], []);
+
+				// eslint-disable-next-line no-unused-vars
+				let valueCellColors = () => { };
+				// eslint-disable-next-line no-unused-vars
+				let rowTotalColors = () => { };
+				// eslint-disable-next-line no-unused-vars
+				let colTotalColors = () => { };
+
+				if (opts.mode && opts.mode !== 'table') {
+					const colorScaleGenerator = this.tableColorScaleGenerator;
+					const rowTotalValues = colKeys.map((x) =>
+						pivotData.getAggregator([], x).value()
 					);
-					const colorScale = colorScaleGenerator(allValues);
-					valueCellColors = (r, c, v) => colorScale(v);
-				} else if (opts.heatmapMode === "row") {
-					const rowColorScales = {};
-					rowKeys.map((r) => {
-						const rowValues = colKeys.map((x) =>
-							pivotData.getAggregator(r, x).value()
+					rowTotalColors = colorScaleGenerator(rowTotalValues);
+					const colTotalValues = rowKeys.map((x) =>
+						pivotData.getAggregator(x, []).value()
+					);
+					colTotalColors = colorScaleGenerator(colTotalValues);
+
+					if (opts.mode === "heat-map-full") {
+						const allValues = [];
+						rowKeys.map((r) =>
+							colKeys.map((c) =>
+								allValues.push(pivotData.getAggregator(r, c).value())
+							)
 						);
-						rowColorScales[r] = colorScaleGenerator(rowValues);
-					});
-					valueCellColors = (r, c, v) => rowColorScales[r](v);
-				} else if (opts.heatmapMode === "col") {
-					const colColorScales = {};
-					colKeys.map((c) => {
-						const colValues = rowKeys.map((x) =>
-							pivotData.getAggregator(x, c).value()
-						);
-						colColorScales[c] = colorScaleGenerator(colValues);
-					});
-					valueCellColors = (r, c, v) => colColorScales[c](v);
+						const colorScale = colorScaleGenerator(allValues);
+						valueCellColors = (r, c, v) => colorScale(v);
+					} else if (opts.mode === "heat-map-row") {
+						const rowColorScales = {};
+						rowKeys.map((r) => {
+							const rowValues = colKeys.map((x) =>
+								pivotData.getAggregator(r, x).value()
+							);
+							rowColorScales[r] = colorScaleGenerator(rowValues);
+						});
+						valueCellColors = (r, c, v) => rowColorScales[r](v);
+					} else if (opts.mode === "heat-map-col") {
+						const colColorScales = {};
+						colKeys.map((c) => {
+							const colValues = rowKeys.map((x) =>
+								pivotData.getAggregator(x, c).value()
+							);
+							colColorScales[c] = colorScaleGenerator(colValues);
+						});
+						valueCellColors = (r, c, v) => colColorScales[c](v);
+					}
 				}
-			}
-			const getClickHandler =
-				this.tableOptions && this.tableOptions.clickCallback
-					? (value, rowValues, colValues) => {
+
+				const getClickHandler =
+					this.tableOptions && this.tableOptions.clickCallback
+						? (value, rowValues, colValues) => {
 							const filters = {};
 							for (const i of Object.keys(colAttrs || {})) {
 								const attr = colAttrs[i];
@@ -142,57 +221,58 @@ function makeRenderer(opts = {}) {
 							return (e) =>
 								this.tableOptions.clickCallback(e, value, filters, pivotData);
 						}
-					: null;
-			return Vue.h(
-				"table",
-				{
-					class: ["pvtTable"],
-				},
-				[
-					Vue.h("thead", [
-						colAttrs.map((c, j) => {
-							return Vue.h(
-								"tr",
-								{
-									key: `colAttrs${j}`,
-								},
-								[
-									j === 0 && rowAttrs.length !== 0
-										? Vue.h("th", {
+						: null;
+
+				return Vue.h(
+					"table",
+					{
+						class: ["pvtTable"],
+					},
+					[
+						Vue.h("thead", [
+							colAttrs.map((c, j) => {
+								return Vue.h(
+									"tr",
+									{
+										key: `colAttrs${j}`,
+									},
+									[
+										j === 0 && rowAttrs.length !== 0
+											? Vue.h("th", {
 												colSpan: rowAttrs.length,
 												rowSpan: colAttrs.length,
 											})
-										: undefined,
+											: undefined,
 
-									Vue.h(
-										"th",
-										{
-											class: ["pvtAxisLabel"],
-										},
-										c
-									),
-
-									colKeys.map((colKey, i) => {
-										const x = this.spanSize(colKeys, i, j);
-										if (x === -1) {
-											return null;
-										}
-										return Vue.h(
+										Vue.h(
 											"th",
 											{
-												class: ["pvtColLabel"],
-												key: `colKey${i}`,
-												colSpan: x,
-												rowSpan:
-													j === colAttrs.length - 1 && rowAttrs.length !== 0
-														? 2
-														: 1,
+												class: ["pvtAxisLabel"],
 											},
-											colKey[j]
-										);
-									}),
-									j === 0 && this.rowTotal
-										? Vue.h(
+											c
+										),
+
+										colKeys.map((colKey, i) => {
+											const x = this.spanSize(colKeys, i, j);
+											if (x === -1) {
+												return null;
+											}
+											return Vue.h(
+												"th",
+												{
+													class: ["pvtColLabel"],
+													key: `colKey${i}`,
+													colSpan: x,
+													rowSpan:
+														j === colAttrs.length - 1 && rowAttrs.length !== 0
+															? 2
+															: 1,
+												},
+												colKey[j]
+											);
+										}),
+										j === 0 && this.rowTotal
+											? Vue.h(
 												"th",
 												{
 													class: ["pvtTotalLabel"],
@@ -201,13 +281,13 @@ function makeRenderer(opts = {}) {
 												},
 												"Totals"
 											)
-										: undefined,
-								]
-							);
-						}),
+											: undefined,
+									]
+								);
+							}),
 
-						rowAttrs.length !== 0
-							? Vue.h("tr", [
+							rowAttrs.length !== 0
+								? Vue.h("tr", [
 									rowAttrs.map((r, i) => {
 										return Vue.h(
 											"th",
@@ -221,76 +301,76 @@ function makeRenderer(opts = {}) {
 
 									this.rowTotal
 										? Vue.h(
-												"th",
-												{ class: ["pvtTotalLabel"] },
-												colAttrs.length === 0 ? "Totals" : null
-											)
-										: colAttrs.length === 0
-										? undefined
-										: Vue.h("th", { class: ["pvtTotalLabel"] }, null),
-								])
-							: undefined,
-					]),
-
-					Vue.h("tbody", null, [
-						rowKeys.map((rowKey, i) => {
-							const totalAggregator = pivotData.getAggregator(rowKey, []);
-							return Vue.h(
-								"tr",
-								{
-									key: `rowKeyRow${i}`,
-								},
-								[
-									rowKey.map((txt, j) => {
-										const x = this.spanSize(rowKeys, i, j);
-										if (x === -1) {
-											return null;
-										}
-										return Vue.h(
 											"th",
-											{
-												class: ["pvtRowLabel"],
-												key: `rowKeyLabel${i}-${j}`,
-												rowSpan: x,
-												colSpan:
-													j === rowAttrs.length - 1 && colAttrs.length !== 0
-														? 2
-														: 1,
-											},
-											txt
-										);
-									}),
+											{ class: ["pvtTotalLabel"] },
+											colAttrs.length === 0 ? "Totals" : null
+										)
+										: colAttrs.length === 0
+											? undefined
+											: Vue.h("th", { class: ["pvtTotalLabel"] }, null),
+								])
+								: undefined,
+						]),
 
-									colKeys.map((colKey, j) => {
-										const aggregator = pivotData.getAggregator(rowKey, colKey);
-										return Vue.h(
-											"td",
-											Object.assign(
+						Vue.h("tbody", null, [
+							rowKeys.map((rowKey, i) => {
+								const totalAggregator = pivotData.getAggregator(rowKey, []);
+								return Vue.h(
+									"tr",
+									{
+										key: `rowKeyRow${i}`,
+									},
+									[
+										rowKey.map((txt, j) => {
+											const x = this.spanSize(rowKeys, i, j);
+											if (x === -1) {
+												return null;
+											}
+											return Vue.h(
+												"th",
 												{
-													class: ["pvVal"],
-													style: valueCellColors(
-														rowKey,
-														colKey,
-														aggregator.value()
-													),
-													key: `pvtVal${i}-${j}`,
+													class: ["pvtRowLabel"],
+													key: `rowKeyLabel${i}-${j}`,
+													rowSpan: x,
+													colSpan:
+														j === rowAttrs.length - 1 && colAttrs.length !== 0
+															? 2
+															: 1,
 												},
-												getClickHandler
-													? {
+												txt
+											);
+										}),
+
+										colKeys.map((colKey, j) => {
+											const aggregator = pivotData.getAggregator(rowKey, colKey);
+											return Vue.h(
+												"td",
+												Object.assign(
+													{
+														class: ["pvVal"],
+														style: valueCellColors(
+															rowKey,
+															colKey,
+															aggregator.value()
+														),
+														key: `pvtVal${i}-${j}`,
+													},
+													getClickHandler
+														? {
 															onClick: getClickHandler(
 																aggregator.value(),
 																rowKey,
 																colKey
 															),
 														}
-													: {}
-											),
-											aggregator.format(aggregator.value())
-										);
-									}),
+														: {}
+												),
+												aggregator.format(aggregator.value())
+											);
+										}),
 
-									this.rowTotal
-										? Vue.h(
+										this.rowTotal
+											? Vue.h(
 												"td",
 												Object.assign(
 													{
@@ -299,24 +379,24 @@ function makeRenderer(opts = {}) {
 													},
 													getClickHandler
 														? {
-																onClick: getClickHandler(
-																	totalAggregator.value(),
-																	rowKey,
-																	[null]
-																),
-															}
+															onClick: getClickHandler(
+																totalAggregator.value(),
+																rowKey,
+																[null]
+															),
+														}
 														: {}
 												),
 												totalAggregator.format(totalAggregator.value())
 											)
-										: undefined,
-								]
-							);
-						}),
+											: undefined,
+									]
+								);
+							}),
 
-						Vue.h("tr", [
-							this.colTotal
-								? Vue.h(
+							Vue.h("tr", [
+								this.colTotal
+									? Vue.h(
 										"th",
 										{
 											class: ["pvtTotalLabel"],
@@ -325,10 +405,10 @@ function makeRenderer(opts = {}) {
 										},
 										"Totals"
 									)
-								: undefined,
+									: undefined,
 
-							this.colTotal
-								? colKeys.map((colKey, i) => {
+								this.colTotal
+									? colKeys.map((colKey, i) => {
 										const totalAggregator = pivotData.getAggregator([], colKey);
 										return Vue.h(
 											"td",
@@ -340,21 +420,21 @@ function makeRenderer(opts = {}) {
 												},
 												getClickHandler
 													? {
-															onClick: getClickHandler(
-																totalAggregator.value(),
-																[null],
-																colKey
-															),
-														}
+														onClick: getClickHandler(
+															totalAggregator.value(),
+															[null],
+															colKey
+														),
+													}
 													: {}
 											),
 											totalAggregator.format(totalAggregator.value())
 										);
 									})
-								: undefined,
+									: undefined,
 
-							this.colTotal && this.rowTotal
-								? Vue.h(
+								this.colTotal && this.rowTotal
+									? Vue.h(
 										"td",
 										Object.assign(
 											{
@@ -362,22 +442,30 @@ function makeRenderer(opts = {}) {
 											},
 											getClickHandler
 												? {
-														onClick: getClickHandler(
-															grandTotalAggregator.value(),
-															[null],
-															[null]
-														),
-													}
+													onClick: getClickHandler(
+														grandTotalAggregator.value(),
+														[null],
+														[null]
+													),
+												}
 												: {}
 										),
 										grandTotalAggregator.format(grandTotalAggregator.value())
 									)
-								: undefined,
+									: undefined,
+							]),
 						]),
-					]),
-				]
-			);
-		},
+					]
+				)
+			} else if (['bar-chart', 'line-chart', 'pie-chart', 'percentage-chart'].includes(opts.mode)) {
+
+				return Vue.h('div', {
+					ref: 'chartContainer',
+					id: 'pivot_chart',
+					innerHTML: this.renderChart()
+				});
+			}
+		}
 	};
 	return TableRenderer;
 }
@@ -439,121 +527,43 @@ const XLSXExportRenderer = {
 	},
 };
 
-import { Chart } from "frappe-charts/dist/frappe-charts.min.esm";
-
-function makeChartRenderer(chartType, opts = {}) {
-	const ChartRenderer = {
-		name: opts.name,
-		props: defaultProps.props,
-		data() {
-			return {
-				chart: null
-			};
-		},
-		mounted() {
-			this.renderChart();
-		},
-		watch: {
-			'$props': {
-				handler() {
-					this.updateChart();
-				},
-				deep: true
-			}
-		},
-		methods: {
-			renderChart() {
-				const pivotData = new PivotData(this.$props);
-				const rowKeys = pivotData.getRowKeys();
-				const colKeys = pivotData.getColKeys();
-
-				if (rowKeys.length === 0) {
-					rowKeys.push([]);
-				}
-				if (colKeys.length === 0) {
-					colKeys.push([]);
-				}
-
-				const headerRow = [];
-
-				if (colKeys.length === 1 && colKeys[0].length === 0) {
-					headerRow.push(this.aggregatorName);
-				} else {
-					colKeys.map((col) => {
-						let filteredCols = col.filter(el => !!el);
-						headerRow.push(filteredCols.join("-"));
-					});
-				}
-
-				const rawData = rowKeys.map((r) => {
-					const row = [];
-					colKeys.map((c) => {
-						const v = pivotData.getAggregator(r, c).value();
-						row.push(v || "");
-					});
-					return row;
-				});
-
-				rawData.unshift(headerRow);
-
-				const labels = rowKeys.flat();
-
-				const datasets = rawData[0].map((name, index) => {
-					const values = rawData.slice(1).map(row => row[index]);
-					return {
-						name: name,
-						values: values
-					};
-				});
-
-				const chartHeight = (window.innerHeight / 100) * 60;
-
-				this.chart = new Chart(this.$refs.chartContainer, {
-					data: {
-						labels: labels,
-						datasets: datasets
-					},
-					type: chartType,
-					height: chartHeight,
-					colors: ['#7ad6ff', '#7a94ff', '#d7d0ff', '#ff7b92', '#ffad70', '#fff48d', '#7ef8b3', '#c1ff7a', '#d7b3ff', '#ff7bff', '#b1b1b1', '#8d8d8d']
-				});
-			},
-			updateChart() {
-				console.log('update');
-				
-				if (this.chart) {
-					this.chart.destroy();
-				}
-
-				this.renderChart();
-			}
-		},
-		render() {
-			return Vue.h('div', { ref: 'chartContainer', id: 'pivot_chart' });
-		}
-	};
-	return ChartRenderer;
-}
-
 const renderers = {
-	"Table": makeRenderer({ name: "vue-table" }),
+	"Table": makeRenderer({
+		mode: "table",
+		name: "vue-table"
+	}),
 	"Table Heatmap": makeRenderer({
-		heatmapMode: "full",
+		mode: "heat-map-full",
 		name: "vue-table-heatmap",
 	}),
 	"Table Col Heatmap": makeRenderer({
-		heatmapMode: "col",
+		mode: "heat-map-col",
 		name: "vue-table-col-heatmap",
 	}),
 	"Table Row Heatmap": makeRenderer({
-		heatmapMode: "row",
+		mode: "heat-map-row",
 		name: "vue-table-col-heatmap",
 	}),
-	// "Axis-mixed Chart": makeChartRenderer("axis-mixed"),
-	"Bar Chart": makeChartRenderer("bar"),
-	"Line Chart": makeChartRenderer("line"),
-	"Pie Chart": makeChartRenderer("pie"),
-	"Percentage Chart": makeChartRenderer("percentage"),
+	"Bar Chart": makeRenderer({
+		name: "bar-chart",
+		mode: 'bar-chart',
+		chartType: "bar"
+	}),
+	"Line Chart": makeRenderer({
+		name: "line-chart",
+		mode: 'line-chart',
+		chartType: "line"
+	}),
+	"Pie Chart": makeRenderer({
+		name: "pie-chart",
+		mode: 'pie-chart',
+		chartType: "pie"
+	}),
+	"Percentage Chart": makeRenderer({
+		name: "percentage-chart",
+		mode: 'percentage-chart',
+		chartType: "percentage"
+	}),
 	"Export": XLSXExportRenderer,
 };
 
