@@ -1,6 +1,5 @@
 import { PivotData } from "./helper/utils";
 import defaultProps from "./helper/defaultProps";
-import { Chart } from "frappe-charts/dist/frappe-charts.min.esm";
 import * as Vue from "vue";
 
 function redColorScaleGenerator(values) {
@@ -78,7 +77,7 @@ function makeRenderer(opts = {}) {
 					const chartHeight = (window.innerHeight / 100) * 60;
 
 					setTimeout(() => {
-						return new Chart(this.$refs.chartContainer, {
+						return new frappe.Chart(this.$refs.chartContainer, {
 							data: data,
 							type: opts.chartType,
 							height: chartHeight,
