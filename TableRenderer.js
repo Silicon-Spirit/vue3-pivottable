@@ -81,6 +81,7 @@ function makeRenderer(opts = {}) {
 							data: data,
 							type: opts.chartType,
 							height: chartHeight,
+							lineOptions: opts.lineOptions,
 							colors: ['#7ad6ff', '#7a94ff', '#d7d0ff', '#ff7b92', '#ffad70', '#fff48d', '#7ef8b3', '#c1ff7a', '#d7b3ff', '#ff7bff', '#b1b1b1', '#8d8d8d']
 						});
 					}, 100)
@@ -546,22 +547,34 @@ const renderers = {
 	"Bar Chart": makeRenderer({
 		name: "bar-chart",
 		mode: 'bar-chart',
-		chartType: "bar"
+		chartType: "bar",
+		lineOptions: {},
 	}),
-	"Line Chart": makeRenderer({
+	"Line Chart Straight": makeRenderer({
 		name: "line-chart",
 		mode: 'line-chart',
-		chartType: "line"
+		chartType: "line",
+		lineOptions: {},
+	}),
+	"Line Chart Curved": makeRenderer({
+		name: "line-chart",
+		mode: 'line-chart',
+		chartType: "line",
+		lineOptions: {
+			spline: 1
+		},
 	}),
 	"Pie Chart": makeRenderer({
 		name: "pie-chart",
 		mode: 'pie-chart',
-		chartType: "pie"
+		chartType: "pie",
+		lineOptions: {},
 	}),
 	"Percentage Chart": makeRenderer({
 		name: "percentage-chart",
 		mode: 'percentage-chart',
-		chartType: "percentage"
+		chartType: "percentage",
+		lineOptions: {},
 	}),
 	"Export": XLSXExportRenderer,
 };
