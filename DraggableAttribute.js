@@ -236,12 +236,29 @@ export default {
 				]
 			);
 		},
+		handleOutsideClick(event) {
+			const filterBox = this.$el.querySelector(".pvtFilterBox");
+
+			if (filterBox && !filterBox.contains(event.target) && this.open) {
+				this.openFilterBox(this.name, false);
+			} else if (!filterBox) {
+				window.removeEventListener("click", this.handleOutsideClick);
+			}
+		},
 		toggleFilterBox() {
 			this.openFilterBox(this.name, !this.open);
 			this.moveFilterBoxToTop(this.name);
 		},
 		openFilterBox(attribute, open) {
 			this.$emit("open:filterbox", { attribute, open });
+
+			setTimeout(() => {
+				if (open) {
+					window.addEventListener("click", this.handleOutsideClick);
+				} else {
+					window.removeEventListener("click", this.handleOutsideClick);
+				}
+			}, 200)
 		},
 	},
 	render() {
