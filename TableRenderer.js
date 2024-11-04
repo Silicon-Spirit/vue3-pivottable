@@ -522,7 +522,7 @@ const XLSXExportRenderer = {
 			Vue.h("button", {
 				class: "btn btn-default btn-sm ellipsis mb-3",
 				onClick: () => this.exportToXLSX(data),
-			}, "Export to XLSX")
+			}, __("Export to XLSX"))
 		]);
 	},
 };

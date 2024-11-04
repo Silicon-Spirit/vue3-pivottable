@@ -404,20 +404,20 @@ aggregatorTemplates.stdev = (ddof, f) =>
 	aggregatorTemplates.runningStat("stdev", ddof, f);
 
 // default aggregators & renderers use US naming and number formatting
-const aggregators = ((tpl) => ({
-	Count: tpl.count(usFmtInt),
+let aggregators = ((tpl) => ({
+	"Count": tpl.count(usFmtInt),
 	"Count Unique Values": tpl.countUnique(usFmtInt),
 	"List Unique Values": tpl.listUnique(", "),
-	Sum: tpl.sum(usFmt),
+	"Sum": tpl.sum(usFmt),
 	"Integer Sum": tpl.sum(usFmtInt),
-	Average: tpl.average(usFmt),
-	Median: tpl.median(usFmt),
+	"Average": tpl.average(usFmt),
+	"Median": tpl.median(usFmt),
 	"Sample Variance": tpl.var(1, usFmt),
 	"Sample Standard Deviation": tpl.stdev(1, usFmt),
-	Minimum: tpl.min(usFmt),
-	Maximum: tpl.max(usFmt),
-	First: tpl.first(usFmt),
-	Last: tpl.last(usFmt),
+	"Minimum": tpl.min(usFmt),
+	"Maximum": tpl.max(usFmt),
+	"First": tpl.first(usFmt),
+	"Last": tpl.last(usFmt),
 	"Sum over Sum": tpl.sumOverSum(usFmt),
 	"Sum as Fraction of Total": tpl.fractionOf(tpl.sum(), "total", usFmtPct),
 	"Sum as Fraction of Rows": tpl.fractionOf(tpl.sum(), "row", usFmtPct),
@@ -426,6 +426,14 @@ const aggregators = ((tpl) => ({
 	"Count as Fraction of Rows": tpl.fractionOf(tpl.count(), "row", usFmtPct),
 	"Count as Fraction of Columns": tpl.fractionOf(tpl.count(), "col", usFmtPct),
 }))(aggregatorTemplates);
+
+let translated_aggregators = {};
+
+Object.keys(aggregators).forEach((key) => {
+	translated_aggregators[__(key)] = aggregators[key];
+});
+
+aggregators = translated_aggregators;
 
 const locales = {
 	en: {
@@ -754,7 +762,7 @@ PivotData.defaultProps = {
 	cols: [],
 	rows: [],
 	vals: [],
-	aggregatorName: "Count",
+	aggregatorName: __("Count"),
 	sorters: {},
 	valueFilter: {},
 	rowOrder: "key_a_to_z",

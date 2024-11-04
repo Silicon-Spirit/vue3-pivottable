@@ -49,7 +49,13 @@ export default {
 	},
 	computed: {
 		renderers() {
-			return TableRenderer;
+			const translated_renderers = {};
+
+			Object.keys(TableRenderer).forEach((key) => {
+				translated_renderers[__(key)] = TableRenderer[key];
+			});
+
+			return translated_renderers;
 		},
 		numValsAllowed() {
 			return (
@@ -292,8 +298,8 @@ export default {
 									style: {
 										display: "inline-block",
 									},
-									values: Object.keys(__(aggregators)),
-									value: __(aggregatorName),
+									values: Object.keys(aggregators),
+									value: aggregatorName,
 									onInput: (value) => {
 										this.propUpdater("aggregatorName")(value);
 									},
