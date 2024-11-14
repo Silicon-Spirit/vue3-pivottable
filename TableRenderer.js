@@ -479,7 +479,17 @@ const XLSXExportRenderer = {
 			const workbook = XLSX.utils.book_new();
 			XLSX.utils.book_append_sheet(workbook, worksheet, "Pivot Data");
 
-			XLSX.writeFile(workbook, !!cur_list.doctype ? `${cur_list.doctype.toLowerCase().replaceAll(' ', '_')}_pivot_export.xlsx` : "pivot_data_export.xlsx");
+			const columnWidths = data[0].map((_, colIndex) => {
+				const maxLength = data.reduce((max, row) => {
+					const cellValue = row[colIndex] ? row[colIndex].toString() : "";
+					return Math.max(max, cellValue.length);
+				}, 10);
+				return { wch: maxLength + 2 };
+			});
+
+			worksheet["!cols"] = columnWidths;
+
+			XLSX.writeFile(workbook, !!cur_list.doctype ? `${cur_list.doctype.toLowerCase().replaceAll(' ', '_')}_pivot_export.xlsx` : "pivot_data_export.xlsx", {cellStyles: true});
 		},
 	},
 	render() {
@@ -494,15 +504,32 @@ const XLSXExportRenderer = {
 			colKeys.push([]);
 		}
 
-		const headerRow = pivotData.props.rows.map((r) => r);
-		if (colKeys.length === 1 && colKeys[0].length === 0) {
-			headerRow.push(this.aggregatorName);
-		} else {
-			colKeys.map((c) => headerRow.push(c.join("-")));
+		const rows = Array.from(pivotData.props.rows)
+		const cols = Array.from(pivotData.props.cols)
+
+		const format_data = []
+
+		cols.forEach(col => format_data.push([col]))
+		rows.forEach(row => format_data.forEach(col => col.unshift('')))
+
+		for (let i = 0; i < colKeys.length; i++) {
+			for (let j = 0; j < cols.length; j++) {
+				format_data[j].push(colKeys[i][j])
+			}
 		}
 
-		const data = rowKeys.map((r) => {
+		const format_rows = rows
+
+		for (let i = 0; i < colKeys.length + 1; i++) {
+			format_rows.push('')
+		}
+
+		format_data.push(format_rows)
+
+		const datas = rowKeys.map((r) => {
 			const row = r.map((x) => x);
+			if (cols.length) row.push('')
+
 			colKeys.map((c) => {
 				const v = pivotData.getAggregator(r, c).value();
 				row.push(v || "");
@@ -510,7 +537,9 @@ const XLSXExportRenderer = {
 			return row;
 		});
 
-		data.unshift(headerRow);
+		datas.forEach(data => format_data.push(data))
+
+		console.log(format_data);
 
 		return Vue.h("div", {
 			class: "d-flex justify-content-center align-items-center",
@@ -521,7 +550,7 @@ const XLSXExportRenderer = {
 		}, [
 			Vue.h("button", {
 				class: "btn btn-default btn-sm ellipsis mb-3",
-				onClick: () => this.exportToXLSX(data),
+				onClick: () => this.exportToXLSX(format_data),
 			}, __("Export to XLSX"))
 		]);
 	},
