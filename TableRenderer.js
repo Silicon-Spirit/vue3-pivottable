@@ -124,15 +124,27 @@ function makeRenderer(opts = {}) {
 
 					const datasets = rawData[0].map((name, index) => {
 						const values = rawData.slice(1).map(row => row[index]);
+
 						return {
 							name: name,
 							values: values
-						};
+						}
 					});
 
 					const data = {
 						labels: labels,
 						datasets: datasets
+					}
+
+					// Format values empty string to number to fix pie/percentage charts issues
+					const isNumber = data.datasets.some(entry => 
+						entry.values.some(value => typeof value === "number")
+					);
+
+					if (isNumber == true) {				
+						data.datasets.forEach(entry => {
+							entry.values = entry.values.map(value => value === "" ? 0 : value);
+						});
 					}
 
 					buildChartElement(data)
