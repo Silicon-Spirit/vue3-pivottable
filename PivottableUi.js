@@ -271,6 +271,7 @@ export default {
 							h(Dropdown, {
 								values: Object.keys(this.renderers),
 								value: rendererName,
+								title: __('Select how the data should be displayed'),
 								onInput: (value) => {
 									this.propUpdater("rendererName")(value);
 								},
@@ -300,6 +301,7 @@ export default {
 									},
 									values: Object.keys(aggregators),
 									value: aggregatorName,
+									title: __('Select the aggregation method for the data'),
 									onInput: (value) => {
 										this.propUpdater("aggregatorName")(value);
 									},
@@ -308,6 +310,7 @@ export default {
 									"a",
 									{
 										class: ["pvtRowOrder"],
+										title: __('Update the order of the rows'),
 										role: "button",
 										onClick: () => {
 											this.propUpdater("rowOrder")(
@@ -321,6 +324,7 @@ export default {
 									"a",
 									{
 										class: ["pvtColOrder"],
+										title: __('Update the order of the columns'),
 										role: "button",
 										onClick: () => {
 											this.propUpdater("colOrder")(
