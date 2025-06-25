@@ -9,12 +9,24 @@ const addSeparators = function (nStr, thousandsSep, decimalSep) {
 	return x1 + x2;
 };
 
+const getFormatOptionsFromFrappe = () => {
+	const format = window.get_number_format();
+	const format_info = window.get_number_format_info(format)
+
+	return {
+		thousandsSep: format_info.group_sep,
+		decimalSep: format_info.decimal_str,
+		digitsAfterDecimal: format_info.precision,
+	};
+};
+
 const numberFormat = function (optsIn) {
+	const frappeFormat = getFormatOptionsFromFrappe();
 	const defaults = {
-		digitsAfterDecimal: 2,
+		digitsAfterDecimal: frappeFormat.digitsAfterDecimal,
 		scaler: 1,
-		thousandsSep: ",",
-		decimalSep: ".",
+		thousandsSep: frappeFormat.thousandsSep,
+		decimalSep: frappeFormat.decimalSep,
 		prefix: "",
 		suffix: "",
 	};
