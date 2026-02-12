@@ -48,14 +48,26 @@ export default {
 		...common.props,
 	},
 	computed: {
-		renderers() {
-			const translated_renderers = {};
-
+		rendererLabels() {
+			const labels = {};
 			Object.keys(TableRenderer).forEach((key) => {
-				translated_renderers[__(key)] = TableRenderer[key];
+				labels[key] = __(key);
 			});
-
-			return translated_renderers;
+			return labels;
+		},
+		aggregatorLabels() {
+			const labels = {};
+			Object.keys(aggregators).forEach((key) => {
+				labels[key] = __(key);
+			});
+			return labels;
+		},
+		attrLabels() {
+			const labels = {};
+			Object.keys(this.attrValues).forEach((key) => {
+				labels[key] = __(key);
+			});
+			return labels;
 		},
 		numValsAllowed() {
 			return (
@@ -238,8 +250,9 @@ export default {
 							draggable:
 								!this.sortonlyFromDragDrop.includes(element) &&
 								!this.disabledFromDragDrop.includes(element),
-							name: element,
-							key: element,
+					fieldName: element,
+					name: __(element),
+						key: element,
 							attrValues: this.attrValues[element],
 							sorter: getSort(this.sorters, element),
 							menuLimit: this.menuLimit,
@@ -269,7 +282,8 @@ export default {
 						},
 						[
 							h(Dropdown, {
-								values: Object.keys(this.renderers),
+								values: Object.keys(TableRenderer),
+								labels: this.rendererLabels,
 								value: rendererName,
 								title: __('Select how the data should be displayed'),
 								onInput: (value) => {
@@ -299,8 +313,7 @@ export default {
 									style: {
 										display: "inline-block",
 									},
-									values: Object.keys(aggregators),
-									value: aggregatorName,
+									values: Object.keys(aggregators),								labels: this.aggregatorLabels,									value: aggregatorName,
 									title: __('Select the aggregation method for the data'),
 									onInput: (value) => {
 										this.propUpdater("aggregatorName")(value);
@@ -342,8 +355,7 @@ export default {
 												(e) =>
 													!this.hiddenAttributes.includes(e) &&
 													!this.hiddenFromAggregators.includes(e)
-											),
-											value: vals[i],
+											),										labels: this.attrLabels,											value: vals[i],
 											onInput: (value) => {
 												this.propsData.vals.splice(i, 1, value);
 											},

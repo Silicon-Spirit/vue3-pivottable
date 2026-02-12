@@ -15,6 +15,10 @@ export default {
 			type: Boolean,
 			default: true,
 		},
+		fieldName: {
+			type: String,
+			required: true,
+		},
 		name: {
 			type: String,
 			required: true,
@@ -92,9 +96,9 @@ export default {
 		},
 		toggleValue(value) {
 			if (value in this.valueFilter) {
-				this.removeValuesFromFilter(this.name, [value]);
+				this.removeValuesFromFilter(this.fieldName, [value]);
 			} else {
-				this.addValuesToFilter(this.name, [value]);
+				this.addValuesToFilter(this.fieldName, [value]);
 			}
 		},
 		matchesFilter(x) {
@@ -107,7 +111,7 @@ export default {
 			e.stopPropagation();
 			this.value = value;
 			this.setValuesInFilter(
-				this.name,
+				this.fieldName,
 				Object.keys(this.attrValues).filter((y) => y !== value)
 			);
 		},
@@ -126,7 +130,7 @@ export default {
 						cursor: "initial",
 						zIndex: this.zIndex,
 					},
-					onClick: () => this.moveFilterBoxToTop(this.name),
+					onClick: () => this.moveFilterBoxToTop(this.fieldName),
 				},
 				[
 					Vue.h(
@@ -166,7 +170,7 @@ export default {
 											role: "button",
 											onClick: () =>
 												this.removeValuesFromFilter(
-													this.name,
+												this.fieldName,
 													Object.keys(this.attrValues).filter(
 														this.matchesFilter.bind(this)
 													)
@@ -181,7 +185,7 @@ export default {
 											role: "button",
 											onClick: () =>
 												this.addValuesToFilter(
-													this.name,
+												this.fieldName,
 													Object.keys(this.attrValues).filter(
 														this.matchesFilter.bind(this)
 													)
@@ -240,14 +244,14 @@ export default {
 			const filterBox = this.$el.querySelector(".pvtFilterBox");
 
 			if (filterBox && !filterBox.contains(event.target) && this.open) {
-				this.openFilterBox(this.name, false);
+			this.openFilterBox(this.fieldName, false);
 			} else if (!filterBox) {
 				window.removeEventListener("click", this.handleOutsideClick);
 			}
 		},
 		toggleFilterBox() {
-			this.openFilterBox(this.name, !this.open);
-			this.moveFilterBoxToTop(this.name);
+			this.openFilterBox(this.fieldName, !this.open);
+			this.moveFilterBoxToTop(this.fieldName);
 		},
 		openFilterBox(attribute, open) {
 			this.$emit("open:filterbox", { attribute, open });
@@ -274,7 +278,7 @@ export default {
 		return Vue.h(
 			"li",
 			{
-				"data-id": !this.disabled ? this.name : undefined,
+				"data-id": !this.disabled ? this.fieldName : undefined,
 			},
 			[
 				Vue.h(

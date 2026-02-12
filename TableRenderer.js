@@ -261,8 +261,8 @@ function makeRenderer(opts = {}) {
 											{
 												class: ["pvtAxisLabel"],
 											},
-											c
-										),
+											__(c)
+									),
 
 										colKeys.map((colKey, i) => {
 											const x = this.spanSize(colKeys, i, j);
@@ -291,7 +291,7 @@ function makeRenderer(opts = {}) {
 													rowSpan:
 														colAttrs.length + (rowAttrs.length === 0 ? 0 : 1),
 												},
-												"Totals"
+												__("Totals")
 											)
 											: undefined,
 									]
@@ -307,7 +307,7 @@ function makeRenderer(opts = {}) {
 												class: ["pvtAxisLabel"],
 												key: `rowAttr${i}`,
 											},
-											r
+											__(r)
 										);
 									}),
 
@@ -315,7 +315,7 @@ function makeRenderer(opts = {}) {
 										? Vue.h(
 											"th",
 											{ class: ["pvtTotalLabel"] },
-											colAttrs.length === 0 ? "Totals" : null
+											colAttrs.length === 0 ? __("Totals") : null
 										)
 										: colAttrs.length === 0
 											? undefined
@@ -415,7 +415,7 @@ function makeRenderer(opts = {}) {
 											colSpan:
 												rowAttrs.length + (colAttrs.length === 0 ? 0 : 1),
 										},
-										"Totals"
+										__("Totals")
 									)
 									: undefined,
 

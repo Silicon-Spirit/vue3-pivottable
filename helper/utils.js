@@ -439,14 +439,6 @@ let aggregators = ((tpl) => ({
 	"Count as Fraction of Columns": tpl.fractionOf(tpl.count(), "col", usFmtPct),
 }))(aggregatorTemplates);
 
-let translated_aggregators = {};
-
-Object.keys(aggregators).forEach((key) => {
-	translated_aggregators[__(key)] = aggregators[key];
-});
-
-aggregators = translated_aggregators;
-
 const locales = {
 	en: {
 		aggregators,
@@ -774,7 +766,7 @@ PivotData.defaultProps = {
 	cols: [],
 	rows: [],
 	vals: [],
-	aggregatorName: __("Count"),
+	aggregatorName: "Count",
 	sorters: {},
 	valueFilter: {},
 	rowOrder: "key_a_to_z",

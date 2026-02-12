@@ -6,7 +6,7 @@ export default {
 		},
 		aggregatorName: {
 			type: String,
-			default: __("Count"),
+			default: "Count",
 		},
 		cols: {
 			type: Array,
@@ -16,7 +16,7 @@ export default {
 		},
 		rendererName: {
 			type: String,
-			default: __("Table"),
+			default: "Table",
 		},
 		rowTotal: {
 			type: Boolean,
