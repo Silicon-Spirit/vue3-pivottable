@@ -21,19 +21,24 @@ const getFormatOptionsFromFrappe = () => {
 };
 
 const numberFormat = function (optsIn) {
-	const frappeFormat = getFormatOptionsFromFrappe();
-	const defaults = {
-		digitsAfterDecimal: frappeFormat.digitsAfterDecimal,
-		scaler: 1,
-		thousandsSep: frappeFormat.thousandsSep,
-		decimalSep: frappeFormat.decimalSep,
-		prefix: "",
-		suffix: "",
-	};
-	const opts = Object.assign({}, defaults, optsIn);
+	// Read the Frappe number format on first use, not at import: this module is
+	// loaded before desk startup fills frappe.sys_defaults (Frappe >= 16.33.1).
+	let opts = null;
 	return function (x) {
 		if (isNaN(x) || !isFinite(x)) {
 			return "";
+		}
+		if (!opts) {
+			const frappeFormat = getFormatOptionsFromFrappe();
+			const defaults = {
+				digitsAfterDecimal: frappeFormat.digitsAfterDecimal,
+				scaler: 1,
+				thousandsSep: frappeFormat.thousandsSep,
+				decimalSep: frappeFormat.decimalSep,
+				prefix: "",
+				suffix: "",
+			};
+			opts = Object.assign({}, defaults, optsIn);
 		}
 		const result = addSeparators(
 			(opts.scaler * x).toFixed(opts.digitsAfterDecimal),
